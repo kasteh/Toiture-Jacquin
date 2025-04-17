@@ -1,0 +1,141 @@
+/* Variables CSS modernes */
+:root {
+    --primary-color: #3490dc;
+    --secondary-color: #6c757d;
+    --font-main: 'Roboto', sans-serif;
+}
+
+body {
+    font-family: var(--font-main);
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Espaces cohérents */
+section {
+    padding: 5rem 0;
+}
+
+/* Boutons modernes */
+.btn {
+    border-radius: 0.25rem;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+/* Effets hover subtils */
+.nav-link, .btn, .social-links a {
+    transition: all 0.3s ease;
+}
+
+/* Responsive images */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+header .bg-primary {
+    background-color: #2c3e50 !important; /* Couleur de fond bleu foncé */
+}
+
+header .input-group {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+header .form-control {
+    border-radius: 4px 0 0 4px !important;
+    border: none;
+}
+
+header .btn-light {
+    border-radius: 0 4px 4px 0 !important;
+    background-color: #f8f9fa;
+    transition: all 0.3s;
+}
+
+header .btn-light:hover {
+    background-color: #e9ecef;
+}
+
+@media (max-width: 767.98px) {
+    header .bg-primary {
+        padding: 0.5rem 0;
+    }
+    
+    header .input-group {
+        max-width: 100% !important;
+    }
+}
+
+footer .form-control {
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+
+footer .form-control:focus {
+    background-color: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.3);
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(255,255,255,0.1);
+}
+
+footer .text-muted {
+    color: #adb5bd !important;
+}
+
+footer a.hover-text-white:hover {
+    color: white !important;
+}
+
+footer .transition {
+    transition: color 0.3s ease;
+}
+
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("{{ asset('images/couvreur.png') }}");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    padding: 6rem 0;
+    position: relative;
+    margin-top: -1px;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+.hero-section .card {
+    border-radius: 12px;
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-section .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+@media (max-width: 991.98px) {
+    .hero-section {
+        padding: 4rem 0;
+        background-attachment: scroll;
+    }
+    
+    .hero-section .text-white {
+        text-align: center;
+    }
+    
+    .hero-section ul {
+        display: inline-block;
+        text-align: left;
+    }
+}
