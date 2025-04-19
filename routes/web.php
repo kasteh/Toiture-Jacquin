@@ -22,15 +22,17 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::group(['middleware' => 'auth'], function () {
         // Dashboard & Déconnexion
-        Route::get('/', 'AdminController@dashboard')->name('admin.dashboard');
+        Route::get('/dashboard', 'AdminController@dashboard')->name('admin.dashboard');
         Route::get('/logout', 'AdminController@logout')->name('admin.logout');
         Route::get('/stats', 'AdminController@stats')->name('admin.stats');
 
         Route::get('/settings', [SettingController::class, 'edit'])->name('admin.settings.edit');
         Route::put('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 
+        Route::delete('/categories/bulk-delete', 'CategoryController@bulkDelete')->name('admin.categories.bulk-delete');
         Route::resource('/categories', CategoryController::class, ['as' => 'admin']);
 
+        Route::delete('/contents/bulk-delete', 'ContentController@bulkDelete')->name('admin.contents.bulk-delete');
         Route::resource('/contents', ContentController::class, ['as' => 'admin']);
 
         Route::resource('/users', UserController::class, ['as' => 'admin']);

@@ -113,4 +113,22 @@ class ContentController extends Controller
 
         return redirect()->route('admin.contents.index')->with('success', 'Contenu supprimé avec succès.');
     }
+
+    /**
+     * Supprimer plusieurs contents sélectionnées.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function bulkDelete(Request $request)
+    {
+        $ids = explode(',', $request->input('ids'));
+    
+        if (!empty($ids)) {
+            Content::whereIn('id', $ids)->delete();
+            return redirect('/admin/contents')->with('success', 'Textes supprimés avec succès.');
+        }
+    
+        return redirect('/admin/contents')->with('error', 'Aucun texte sélectionné.');
+    }
 }

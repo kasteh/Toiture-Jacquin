@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Agence;
 use App\Category;
 use App\City;
+use App\Setting;
 use App\Http\Requests\CreateAgenceRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Mail, Cache, Log, DB};
+use App\Helpers\SettingHelper;
 
 class AgenceController extends Controller
 {
@@ -15,13 +18,18 @@ class AgenceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $categoryCount = Category::count();
         $headerCategories = Category::all()->random($categoryCount > 4 ? 4 : $categoryCount);
         $headerCities = City::with('departement')->get()->random($categoryCount > 4 ? 4 : $categoryCount);
         $agences = Agence::all();
-        return view('agences',compact('headerCategories','headerCities','agences'));
+        
+        // Récupère toutes les settings
+        $heroImage = SettingHelper::get('hero_image');
+        
+        // Passe les settings et l'image de héros séparément
+        return view('agences',compact('headerCategories','headerCities','agences', 'heroImage'));
     }
 
     /**
@@ -34,7 +42,8 @@ class AgenceController extends Controller
         $categoryCount = Category::count();
         $headerCategories = Category::all()->random($categoryCount > 4 ? 4 : $categoryCount);
         $headerCities = City::with('departement')->get()->random($categoryCount > 4 ? 4 : $categoryCount);
-        return view('becomePartener',compact('headerCategories','headerCities'));
+        $heroImage = SettingHelper::get('hero_image');
+        return view('becomePartener',compact('headerCategories','headerCities', 'heroImage'));
     }
 
     /**
@@ -47,7 +56,7 @@ class AgenceController extends Controller
     {
         $arguments = $request->validated();
         Agence::create($arguments);
-        return redirect()->back()->with('success','Merci, vous êtes maintenant inscrit autant que partenaire.');
+        return redirect()->back()->with('success','Merci, vous êtes maintenant inscrit en tant que partenaire.');
     }
 
     /**

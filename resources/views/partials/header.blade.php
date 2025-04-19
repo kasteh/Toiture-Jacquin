@@ -86,7 +86,7 @@
     
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    @foreach($headerCategories as $category)
+                    @foreach($headerCategories->random(3) as $category)
                         <li class="nav-item">
                             <!-- URL dynamique avec protocole et port adaptés -->
                             <a class="nav-link" href="{{ $protocol }}{{ $citySlug ?? $cityModel->slug }}.{{ $mainDomain }}{{ $port }}/{{ $category->slug }}">
@@ -97,10 +97,10 @@
                 
                     <!-- Liens statiques toujours vers domaine principal -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/agences') }}">Nos agences</a>
+                        <a class="nav-link" href="{{ route('nos-agences') }}">Nos agences</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/agences/devenir-partenaire') }}">Devenir partenaire</a>
+                        <a class="nav-link" href="{{ route('devenir-partenaire') }}">Devenir partenaire</a>
                     </li>
                 </ul>            
             </div>
@@ -108,7 +108,7 @@
     </nav>
     
     <!-- Hero Section -->
-    <section class="hero-section p-5" style="background-image: url('{{ asset('storage/' . $siteSettings['heroImage']) }}'); background-size: cover; background-repeat: no-repeat; position: relative; color: #fff;">
+    <section class="hero-section p-5" style="background-image: url('{{ asset('storage/' . ($heroImage ?? $siteSettings['heroImage'])) }}'); background-size: cover; background-repeat: no-repeat; position: relative; color: #fff;">
         <!-- Container for Overlay, affecting only the background -->
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
 
@@ -117,7 +117,16 @@
             <div class="row h-100 align-items-center">
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <div class="text">
-                        <h1 class="display-3 text-white fw-bold mb-4">{{ config('app.startup') }}</h1>
+                        @php
+                            // Récupérer le slug de l'URL
+                            $slug = request()->segment(1); // Le premier segment de l'URL, qui est le slug de la catégorie
+                        
+                            // Chercher la catégorie dans la base de données avec le slug
+                            $category = App\Category::where('slug', $slug)->first();
+                        @endphp
+                        <h1 class="display-3 text-white fw-bold mb-4">
+                            {{ isset($category) ? $category->name : config('app.startup') }}
+                        </h1>
                     </div>
                 </div>
                 <div class="col-lg-5">
