@@ -20,16 +20,23 @@ class AgenceController extends Controller
      */
     public function index(Request $request)
     {
+        // Récupérer le nombre total de catégories et déterminer la limite
         $categoryCount = Category::count();
-        $headerCategories = Category::all()->random($categoryCount > 4 ? 4 : $categoryCount);
-        $headerCities = City::with('departement')->get()->random($categoryCount > 4 ? 4 : $categoryCount);
+        $maxCategories = $categoryCount > 4 ? 4 : $categoryCount;
+    
+        // Sélectionner un nombre limité de catégories et de villes
+        $headerCategories = Category::all()->random($maxCategories);
+        $headerCities = City::with('departement')->get()->random($maxCategories);
+    
+        // Récupérer toutes les agences
         $agences = Agence::all();
-        
-        // Récupère toutes les settings
+    
+        // Récupérer l'image héro
         $heroImage = SettingHelper::get('hero_image');
-        
-        // Passe les settings et l'image de héros séparément
-        return view('agences',compact('headerCategories','headerCities','agences', 'heroImage'));
+        $aboutFooter = SettingHelper::get('about_footer');
+    
+        // Passer les variables à la vue
+        return view('agences', compact('headerCategories', 'headerCities', 'agences', 'heroImage', 'aboutFooter'));
     }
 
     /**
@@ -43,7 +50,9 @@ class AgenceController extends Controller
         $headerCategories = Category::all()->random($categoryCount > 4 ? 4 : $categoryCount);
         $headerCities = City::with('departement')->get()->random($categoryCount > 4 ? 4 : $categoryCount);
         $heroImage = SettingHelper::get('hero_image');
-        return view('becomePartener',compact('headerCategories','headerCities', 'heroImage'));
+        $aboutFooter = SettingHelper::get('about_footer');
+        
+        return view('becomePartener',compact('headerCategories','headerCities', 'heroImage', 'aboutFooter'));
     }
 
     /**

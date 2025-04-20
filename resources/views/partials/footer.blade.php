@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-md-4">
                 <h5 class="text-white">À propos</h5>
-                <p class="text-white-50">Une description courte de votre entreprise ou site web.</p>
+                <p class="text-white-50">{{ $siteSettings['aboutFooter'] ?? $aboutFooter }}</p>
             </div>
             <div class="col-md-4 mb-4 mb-md-0">
                 <h5 class="mb-3 text-white">Liens rapides</h5>

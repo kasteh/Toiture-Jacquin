@@ -43,6 +43,7 @@ class GeneralController extends Controller
                 'heroBullets' => explode(',', SettingHelper::get('hero_bullets', 'Intervention rapide,Professionnels certifiés,Devis gratuit,Satisfaction garantie')),
                 'faqMainTitle' => SettingHelper::get('faq_main_title', 'En savoir plus'),
                 'presentationContent' => SettingHelper::get('presentation_content', ''),
+                'aboutFooter' => SettingHelper::get('about_footer'),
             ];
         });
     

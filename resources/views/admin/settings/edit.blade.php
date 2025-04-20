@@ -89,6 +89,14 @@
                 <div id="editor">{!! $settings['presentation_content'] ?? '' !!}</div>
                 <input type="hidden" name="presentation_content" id="hiddenContent">
             </div>
+            
+            <!-- A propos Footer -->
+            <hr>
+            <h4 class="mt-4">Footer</h4>
+            <div class="mb-3">
+                <label for="about_footer" class="form-label">Footer - A propos</label>
+                <textarea name="about_footer" id="about_footer" class="form-control" rows="4">{{ $settings['about_footer'] ?? '' }}</textarea>
+            </div>
 
             <button type="submit" class="btn btn-primary">Enregistrer</button>
         </form>

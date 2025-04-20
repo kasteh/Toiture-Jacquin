@@ -25,6 +25,7 @@ class SettingController extends Controller
             'hero_bullets' => 'nullable|string',
             'faq_main_title' => 'nullable|string',
             'presentation_content' => 'nullable|string',
+            'about_footer' => 'nullable|string',
         ]);
 
         // Liste des clés à mettre à jour (hors image)
@@ -36,6 +37,7 @@ class SettingController extends Controller
             'hero_bullets' => $request->input('hero_bullets'),
             'faq_main_title' => $request->input('faq_main_title'),
             'presentation_content' => $request->input('presentation_content'),
+            'about_footer' => $request->input('about_footer'),
         ];
 
         // Sauvegarde des réglages textuels

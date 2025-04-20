@@ -118,14 +118,46 @@
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <div class="text">
                         @php
-                            // Récupérer le slug de l'URL
-                            $slug = request()->segment(1); // Le premier segment de l'URL, qui est le slug de la catégorie
+                            use Illuminate\Support\Str;
+                            use App\Category;
+                            use App\Content;
                         
-                            // Chercher la catégorie dans la base de données avec le slug
-                            $category = App\Category::where('slug', $slug)->first();
+                            $segments = request()->segments();
+                            $host = request()->getHost();
+                            $domainBase = config('app.url', 'devis-toiture-76.fr');
+                            $subdomain = Str::before($host, '.' . $domainBase);
+                        
+                            // 👉 Ville = 1er segment si présent
+                            $citySlug = $segments[0] ?? '';
+                        
+                            // 👉 Nettoyer le sous-domaine : retirer -ville à la fin
+                            $cleanedSubdomain = Str::beforeLast($subdomain, '-' . $citySlug);
+                        
+                            // 🧠 Chercher un Content avec ce prefix nettoyé
+                            $content = Content::forSlugVariations($subdomain, $citySlug)->first()
+                                ?? Content::where('slug', 'LIKE', "{$cleanedSubdomain}%")->first();
+                        
+                            if ($content) {
+                                    $replacedTitle = preg_replace_callback(
+                                        '/\[(ville|Ville|département|Département|Departement|departement)\]/u',
+                                        fn($m) => match (strtolower($m[1])) {
+                                            'ville' => ucfirst($city->name),
+                                            'departement', 'département' => ucfirst($departement->name),
+                                            default => $m[0]
+                                        },
+                                        $content->title
+                                    );
+                                $displayName = $replacedTitle;
+                            } else {
+                                // Fallback → chercher une catégorie en fin d’URL
+                                $lastSegment = end($segments);
+                                $category = Category::where('slug', $lastSegment)->first();
+                                $displayName = $category->name;
+                            }
                         @endphp
+                        
                         <h1 class="display-3 text-white fw-bold mb-4">
-                            {{ isset($category) ? $category->name : config('app.startup') }}
+                            {{ $displayName ?? config('app.startup') }}
                         </h1>
                     </div>
                 </div>
