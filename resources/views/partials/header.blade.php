@@ -86,7 +86,7 @@
     
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    @foreach($headerCategories->random(3) as $category)
+                    @foreach($headerCategories as $category)
                         <li class="nav-item">
                             <!-- URL dynamique avec protocole et port adaptés -->
                             <a class="nav-link" href="{{ $protocol }}{{ $citySlug ?? $cityModel->slug }}.{{ $mainDomain }}{{ $port }}/{{ $category->slug }}">
