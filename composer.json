@@ -14,7 +14,8 @@
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
-        "openai-php/client": "^0.10.3"
+        "openai-php/client": "^0.10.3",
+        "statikbe/laravel-cookie-consent": "^1.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.7",
