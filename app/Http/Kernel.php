@@ -13,6 +13,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Statikbe\CookieConsent\CookieConsentMiddleware::class,
     ];
 
     protected $middlewareGroups = [
@@ -45,6 +46,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'detect.city' => \App\Http\Middleware\DetectCityFromSubdomain::class,
         'forget.city' => \App\Http\Middleware\ForgetCityIfMainDomain::class,
+        'cookie-consent' => \Statikbe\CookieConsent\CookieConsentMiddleware::class,
     ];
 
     protected $middlewarePriority = [

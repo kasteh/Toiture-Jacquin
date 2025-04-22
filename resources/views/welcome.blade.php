@@ -70,74 +70,7 @@
     </section>
 
     <!-- Section Articles -->
-    <section class="py-5">
-        <div class="container">
-            <h2 class="text-center mb-5">Nos derniers articles</h2>
-
-            <div class="row g-4">
-                @foreach($contents as $key => $content)
-                    @php
-                        $city = \App\City::where('slug', session('current_city'))->first();
-                        if (!$city) {
-                            $city = \App\City::inRandomOrder()->first();
-                        }
-                        $departement = $city?->departement ?? \App\Departement::first();
-
-                        if (!$content->relationLoaded('category')) {
-                            $content->load('category');
-                        }
-
-                        $processedText = preg_replace_callback(
-                            '/\[(ville|Ville|département|Département|Departement|departement)\]/u',
-                            fn($m) => str_ireplace(
-                                ['ville', 'departement', 'département'],
-                                [$city->name, ucfirst($departement->name), ucfirst($departement->name)],
-                                $m[0]
-                            ),
-                            $content->text
-                        );
-
-                        $replacedTitle = preg_replace_callback(
-                            '/\[(ville|Ville|département|Département|Departement|departement)\]/u',
-                            fn($m) => match (strtolower($m[1])) {
-                                'ville' => ucfirst($city->name),
-                                'departement', 'département' => ucfirst($departement->name),
-                                default => $m[0]
-                            },
-                            $content->title
-                        );
-
-                        $realSlug = str_replace('[ville]', $city->slug, $content->slug);
-
-                        $contentUrl = route('content.sub.show', [
-                            'city' => $city->slug,
-                            'category' => $content->category,
-                            'contentSlug' => $realSlug
-                        ]);
-
-                        $imageUrl = Str::start($content->image, '/');
- 
-                    @endphp
-
-                    <div class="@if($key === 0) col-lg-8 @elseif($key === 1) col-lg-4 @else col-md-4 @endif">
-                        <div class="card modern-card h-100 @if($key === 0) featured-article @endif">
-                            <img src="{{ $imageUrl }}">
-                            <div class="card-body">
-                                @if($key === 0)
-                                    <div class="badge bg-primary mb-3">Nouveau</div>
-                                @endif
-                                <h3 class="card-title">{{ $replacedTitle }}</h3>
-                                <p class="card-text">
-                                    {{ Str::limit($processedText, $key === 0 ? 250 : ($key === 1 ? 120 : 100)) }}
-                                </p>
-                                <a href="{{ $contentUrl }}" class="btn @if($key === 0) btn-primary @else btn-outline-primary @endif stretched-link">Lire l'article</a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
+    @include('partials.articles');
 
     <!-- Section CTA Dynamique -->
     @include('partials.cta');
@@ -163,37 +96,30 @@
                 <!-- Colonne Texte -->
                 <div class="col-lg-6">
                     <h6 class="text-uppercase fw-semibold mb-2" style="color: var(--primary);">
-                        Pourquoi Choisir {{ config('app.startup') }} ?
+                        {{ $siteSettings['heroSmallTitle'] }}
                     </h6>
-                    <h2 class="fw-bold mb-4">Votre Partenaire de Confiance pour Tous Vos Projets</h2>
-                    <p class="mb-4">Avec des années d'expérience dans notre domaine, nous garantissons des travaux de haute qualité adaptés à vos besoins spécifiques. Notre équipe s'engage à respecter les délais et à offrir un service client exceptionnel.</p>
+                    <h2 class="fw-bold mb-4">{{ $siteSettings['heroMainTitle'] }}</h2>
+                    <p class="mb-4">{{ $siteSettings['heroDescription'] }}</p>
+                    
+                    @php
+                        $bullets = $siteSettings['heroBullets'] ?? [];
+                        $chunks = array_chunk($bullets, ceil(count($bullets) / 2));
+                    @endphp
                     
                     <!-- Liste en 2 colonnes -->
                     <div class="row">
-                        <div class="col-6">
-                            <ul class="list-unstyled">
-                                <li class="mb-3 d-flex align-items-start">
-                                    <i class="bi bi-check-circle-fill me-2 fs-5 text-primary"></i>
-                                    <span class="fw-semibold text-dark">Intervention rapide</span>
-                                </li>
-                                <li class="mb-3 d-flex align-items-start">
-                                    <i class="bi bi-check-circle-fill me-2 fs-5 text-primary"></i>
-                                    <span class="fw-semibold text-dark">Professionnels certifiés</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-6">
-                            <ul class="list-unstyled">
-                                <li class="mb-3 d-flex align-items-start">
-                                    <i class="bi bi-check-circle-fill me-2 fs-5 text-primary"></i>
-                                    <span class="fw-semibold text-dark">Devis gratuit</span>
-                                </li>
-                                <li class="mb-3 d-flex align-items-start">
-                                    <i class="bi bi-check-circle-fill me-2 fs-5 text-primary"></i>
-                                    <span class="fw-semibold text-dark">Satisfaction garantie</span>
-                                </li>
-                            </ul>
-                        </div>
+                        @foreach($chunks as $chunk)
+                            <div class="col-6">
+                                <ul class="list-unstyled">
+                                    @foreach($chunk as $bullet)
+                                        <li class="mb-3 d-flex align-items-start">
+                                            <i class="bi bi-check-circle-fill me-2 fs-5 text-primary"></i>
+                                            <span class="fw-semibold text-dark">{{ $bullet }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -204,7 +130,7 @@
     <section class="py-5 bg-white">
         <div class="container">
             <div class="text-center mb-4">
-                <h2 class="fw-bold">En savoir plus sur {{ config('app.startup') }}</h2>
+                <h2 class="fw-bold">{{ $siteSettings['faqMainTitle'] }}</h2>
             </div>
 
             <div class="text-center">
@@ -215,26 +141,7 @@
 
             <div class="collapse mt-4" id="faqCollapse">
                 <div class="card card-body shadow-sm border-0">
-                    <h4 class="fw-bold mb-3">Présentation de {{ config('app.startup') }}</h4>
-                    <p>Bienvenue chez {{ config('app.startup') }}, votre professionnel de confiance pour tous vos projets. Notre entreprise s'est imposée comme une référence dans son domaine grâce à notre expertise et notre engagement envers la qualité...</p>
-
-                    <h5 class="fw-bold mt-4">Nos Services</h5>
-                    <ul>
-                        <li><strong>Installation :</strong> Solutions complètes pour vos projets.</li>
-                        <li><strong>Réparation :</strong> Intervention rapide et efficace.</li>
-                        <li><strong>Entretien :</strong> Prévention des problèmes grâce à un entretien régulier.</li>
-                        <li><strong>Rénovation :</strong> Offrez une seconde jeunesse à votre espace.</li>
-                    </ul>
-
-                    <h5 class="fw-bold mt-4">Pourquoi Choisir {{ config('app.startup') }} ?</h5>
-                    <p>Nos professionnels qualifiés assurent un travail soigné, respectant les normes de sécurité, avec des matériaux de qualité et un service client irréprochable.</p>
-
-                    <h5 class="fw-bold mt-4">FAQ</h5>
-                    <ul>
-                        <li><strong>Quels sont les tarifs ?</strong> Nos tarifs dépendent du projet. Demandez un devis gratuit.</li>
-                        <li><strong>Y a-t-il des garanties ?</strong> Oui, nos travaux sont couverts par une garantie.</li>
-                        <li><strong>Comment prendre rendez-vous ?</strong> Par téléphone ou via notre formulaire en ligne.</li>
-                    </ul>
+                    {!! $siteSettings['presentationContent'] !!}
                 </div>
             </div>
         </div>

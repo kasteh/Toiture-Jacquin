@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\categorie;
 use App\Category;
 use App\Http\Requests\CategoryRequest;
 use Illuminate\Http\Request;
@@ -89,5 +88,23 @@ class CategoryController extends Controller
     {
         $category->delete();
         return redirect('/admin/categories');
+    }
+
+    /**
+     * Supprimer plusieurs catégories sélectionnées.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function bulkDelete(Request $request)
+    {
+        $ids = explode(',', $request->input('ids'));
+
+        if (!empty($ids)) {
+            Category::whereIn('id', $ids)->delete();
+            return redirect('/admin/categories')->with('success', 'Catégories supprimées avec succès.');
+        }
+
+        return redirect('/admin/categories')->with('error', 'Aucune catégorie sélectionnée.');
     }
 }

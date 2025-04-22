@@ -27,24 +27,34 @@ class GeneralController extends Controller
      */
     protected function loadSharedData(): void
     {
-        $this->siteSettings = Cache::remember('site_settings', now()->addHours(12), function() {
+        $settingsVersion = Cache::rememberForever('settings_version', function () {
+            return now()->timestamp;
+        });
+        
+        $cacheKey = "site_settings_v{$settingsVersion}";
+    
+        $this->siteSettings = Cache::remember($cacheKey, now()->addHours(12), function () {
             return [
                 'primaryColor' => SettingHelper::get('primary_color', '#FF6600'),
                 'heroImage' => SettingHelper::get('hero_image', '/images/default-hero.jpg'),
+                'heroSmallTitle' => SettingHelper::get('hero_small_title', 'Bienvenue'),
+                'heroMainTitle' => SettingHelper::get('hero_main_title', 'Nous sommes à votre service'),
+                'heroDescription' => SettingHelper::get('hero_description', 'Votre satisfaction est notre priorité.'),
+                'heroBullets' => explode(',', SettingHelper::get('hero_bullets', 'Intervention rapide,Professionnels certifiés,Devis gratuit,Satisfaction garantie')),
+                'faqMainTitle' => SettingHelper::get('faq_main_title', 'En savoir plus'),
+                'presentationContent' => SettingHelper::get('presentation_content', ''),
+                'aboutFooter' => SettingHelper::get('about_footer'),
             ];
         });
-
-        $this->headerCategories = Cache::remember('header_categories', now()->addHours(12), function() {
-            return Category::inRandomOrder()
-                ->limit(4)
-                ->get(['id', 'name', 'slug']);
-        });
-
-        $this->headerCities = Cache::remember('header_cities', now()->addHours(12), function() {
-            return City::with(['departement' => fn($q) => $q->select('code', 'name', 'slug')])
-                ->inRandomOrder()
-                ->limit(4)
-                ->get(['id', 'name', 'slug', 'departement_code']);
+    
+       $this->headerCategories = Category::inRandomOrder()->get(['id', 'name', 'slug']);
+    
+        $this->headerCities = Cache::remember('header_cities', now()->addHours(12), function () {
+            return City::with(['departement' => function ($q) {
+                $q->select('code', 'name', 'slug');
+            }])
+            ->inRandomOrder()
+            ->get(['id', 'name', 'slug', 'departement_code']);
         });
     }
 
@@ -69,7 +79,7 @@ class GeneralController extends Controller
         if ($this->isSubdomainRequest($request)) {
             return $this->handleSubdomainRedirect($request);
         }
-    
+
         return view('welcome', $this->baseViewData([
             'contents' => $this->getHomeContents(),
             'cities' => $this->getAllCitiesData(),

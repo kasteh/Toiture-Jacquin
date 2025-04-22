@@ -5,7 +5,7 @@
     <meta name="description" content="Découvrez nos agences partenaires à travers la France. Trouvez l'agence la plus proche de chez vous.">
 @endsection
 
-@section('style')
+@push('style')
 <style>
     .map-container {
         height: 70vh;
@@ -48,58 +48,56 @@
         }
     }
 </style>
-@endsection
+@endpush
 
 @section('content')                    
-    <div class="container">
-        <!-- En-tête de page -->
-        <div class="page-header text-center">
-            <h1 class="display-5 fw-bold">Nos Agences</h1>
-            <p class="lead mb-0">Trouvez l'agence la plus proche de chez vous</p>
-        </div>
-        
-        <!-- Conteneur de la carte -->
-        <div class="row">
-            <div class="col-12">
-                <div class="map-container bg-white">
-                    <div id="map"></div>
-                </div>
+<div class="container">
+    <!-- En-tête de page -->
+    <div class="page-header text-center">
+        <h1 class="display-5 fw-bold">Nos Agences</h1>
+        <p class="lead mb-0">Trouvez l'agence la plus proche de chez vous</p>
+    </div>
+    
+    <!-- Conteneur de la carte -->
+    <div class="row">
+        <div class="col-12">
+            <div class="map-container bg-white">
+                <div id="map"></div>
             </div>
-        </div>
-        
-        <!-- Liste des agences -->
-        <div class="row mt-4">
-            @foreach($agences as $agence)
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $agence->agence_name }}</h5>
-                        <p class="card-text text-muted">
-                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                            {{ $agence->agence_adress }}
-                        </p>
-                        <p class="card-text">
-                            <i class="fas fa-phone text-primary me-2"></i>
-                            {{ $agence->agence_owner_phone }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            @endforeach
         </div>
     </div>
+    
+    <!-- Liste des agences -->
+    <div class="row mt-4">
+        @foreach($agences as $agence)
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ $agence->agence_name }}</h5>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        {{ $agence->agence_adress }}
+                    </p>
+                    <p class="card-text">
+                        <i class="fas fa-phone text-primary me-2"></i>
+                        {{ $agence->agence_owner_phone }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
 @endsection
 
-@section('script')
+@push('script')
 <script>
-    // Coordonnées de Gagny, France
-    var defaultLocation = {lat: 48.8833, lng: 2.5333};
+    var defaultLocation = { lat: 48.8833, lng: 2.5333 };
     var map;
     var markers = [];
     var infowindow = new google.maps.InfoWindow();
 
     function initMap() {
-        // Création de la carte centrée sur Gagny
         map = new google.maps.Map(document.getElementById("map"), {
             center: defaultLocation,
             zoom: 14,
@@ -137,29 +135,30 @@
             ]
         });
 
-        // Ajouter un marqueur pour Gagny
+        // Marqueur pour Gagny
         addMarker(defaultLocation, "Gagny", "Notre siège social");
 
-        // Ajouter les marqueurs des agences si elles existent
+        // Agences
         @if(isset($agences) && count($agences) > 0)
-            var agences = @json($agences);
-            var bounds = new google.maps.LatLngBounds();
-            
-            agences.forEach(function(agence) {
+        var agences = @json($agences);
+        var bounds = new google.maps.LatLngBounds();
+
+        agences.forEach(function(agence) {
+            if (agence.lat && agence.lng) {
                 var position = new google.maps.LatLng(agence.lat, agence.lng);
                 bounds.extend(position);
-                
-                addMarker(
-                    position, 
-                    agence.agence_name, 
-                    `${agence.address}<br>Téléphone: ${agence.phone}`
-                );
-            });
 
-            // Ajuster la vue pour voir tous les marqueurs
-            if (agences.length > 0) {
-                map.fitBounds(bounds);
+                addMarker(
+                    position,
+                    agence.agence_name,
+                    `${agence.agence_adress}<br>Téléphone: ${agence.agence_owner_phone}`
+                );
             }
+        });
+
+        if (agences.length > 0) {
+            map.fitBounds(bounds);
+        }
         @endif
     }
 
@@ -172,9 +171,9 @@
                 url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
             }
         });
-        
+
         markers.push(marker);
-        
+
         marker.addListener('click', function() {
             infowindow.setContent(`
                 <div class="agence-info-window">
@@ -184,11 +183,10 @@
             `);
             infowindow.open(map, marker);
         });
-        
+
         return marker;
     }
 
-    // Fallback si Google Maps ne charge pas
     function gm_authFailure() {
         document.getElementById('map').innerHTML = `
             <div class="alert alert-danger text-center p-4">
@@ -198,7 +196,6 @@
         `;
     }
 
-    // Chargement de l'API Google Maps
     function loadGoogleMaps() {
         var script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBb7-6-UdCsb4aaxZpUywnJMJUpEnDBfT8&callback=initMap`;
@@ -208,7 +205,6 @@
         document.body.appendChild(script);
     }
 
-    // Démarrer le chargement
     window.addEventListener('load', loadGoogleMaps);
 </script>
-@endsection
+@endpush

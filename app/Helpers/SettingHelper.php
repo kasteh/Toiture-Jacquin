@@ -11,13 +11,24 @@ class SettingHelper
 
     public static function get($key, $default = null)
     {
-        if (!isset(self::$cache[$key])) {
-            self::$cache[$key] = Cache::rememberForever("setting_{$key}", function() use ($key, $default) {
+        $version = Cache::rememberForever('settings_version', function () {
+            return now()->timestamp;
+        });
+    
+        $cacheKey = "setting_{$key}_v{$version}";
+    
+        if (!isset(self::$cache[$cacheKey])) {
+            self::$cache[$cacheKey] = Cache::rememberForever($cacheKey, function () use ($key, $default) {
                 return Setting::where('key', $key)->value('value') ?? $default;
             });
         }
-
-        return self::$cache[$key];
+    
+        return self::$cache[$cacheKey];
+    }
+    
+    public static function invalidateVersion()
+    {
+        Cache::forget('settings_version');
     }
 
     public static function clearCache($key = null)

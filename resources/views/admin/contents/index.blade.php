@@ -6,13 +6,24 @@
         <div class="card-header bg-white border-bottom-0 py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0">
-                    <i class="fas fa-file-alt text-primary me-2"></i>
-                    Gestion des textes
+                    <i class="fas fa-folder-open text-primary me-2"></i>
+                    Liste des Textes
                 </h2>
-                <a href="{{ route('admin.contents.create') }}" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus-circle me-1"></i>
-                    Ajouter un texte
-                </a>
+                <div class="d-flex align-items-center">
+                    <form id="bulk-delete-form" action="{{ route('admin.contents.bulk-delete') }}" method="POST" class="me-2">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" name="ids" id="selected-ids">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer les contents sélectionnées ?')">
+                            <i class="fas fa-trash-alt me-1"></i>
+                            Supprimer la sélection
+                        </button>
+                    </form>
+                    <a href="{{ route('admin.contents.create') }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus-circle me-1"></i>
+                        Ajouter une Texte
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -29,6 +40,9 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
+                            <th width="5%">
+                                <input type="checkbox" id="select-all">
+                            </th>
                             <th width="15%">Catégorie</th>
                             <th width="15%">Image</th>
                             <th width="20%">Titre</th>
@@ -39,6 +53,9 @@
                     <tbody>
                         @forelse($contents as $content)
                         <tr>
+                            <td>
+                                <input type="checkbox" class="content-checkbox" value="{{ $content->id }}">
+                            </td>
                             <td>
                                 @if($content->category)
                                     <span class="badge bg-secondary">{{ $content->category->name }}</span>
@@ -105,3 +122,27 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Select all checkbox toggle
+document.getElementById('select-all').addEventListener('change', function() {
+    const checked = this.checked;
+    document.querySelectorAll('.content-checkbox').forEach(cb => cb.checked = checked);
+});
+
+// Submit selected contents
+document.getElementById('bulk-delete-form').addEventListener('submit', function(e) {
+    const selected = Array.from(document.querySelectorAll('.content-checkbox:checked'))
+                          .map(cb => cb.value);
+
+    if (selected.length === 0) {
+        e.preventDefault();
+        alert('Veuillez sélectionner au moins un texte.');
+        return;
+    }
+
+    document.getElementById('selected-ids').value = selected.join(',');
+});
+</script>
+@endpush

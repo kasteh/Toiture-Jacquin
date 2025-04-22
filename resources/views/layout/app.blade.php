@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css">
+    
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     
@@ -187,15 +188,79 @@
     <main class="container py-4">
         @yield('content')
     </main>
-
+    
     <!-- Footer -->
     @include('partials.footer')
+    
+    <!-- Cookie Consent JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.0/build/cookieconsent.min.js"></script>
+    <script>
+// Afficher la fenêtre de consentement
+window.addEventListener('load', function () {
+    window.cookieconsent.initialise({
+        "palette": {
+            "popup": {
+                "background": "#000"
+            },
+            "button": {
+                "background": "#f1d600"
+            }
+        },
+        "theme": "classic",
+        "content": {
+            "message": "Nous utilisons des cookies pour améliorer votre expérience sur notre site, y compris la géolocalisation.",
+            "dismiss": "Accepter",
+            "link": "En savoir plus",
+            "href": "/politique-de-cookies"
+        },
+        onInitialise: function(status) {
+            // Vérifier si l'utilisateur a déjà consenti aux cookies
+            if (this.hasConsented()) {
+                // Si l'utilisateur a accepté, essayer d'activer la géolocalisation
+                askForGeolocationPermission();
+            } else {
+                // Sinon, afficher le consentement
+                document.querySelector('.lcc-compact-cookie').style.display = 'block';
+            }
+        }
+    });
 
+    // Gérer l'acceptation des cookies et de la géolocalisation
+    document.querySelector('.js-lcc-accept').addEventListener('click', function() {
+        // Accepter les cookies
+        window.cookieconsent.accept();
+        
+        // Demander la géolocalisation si l'utilisateur a accepté
+        askForGeolocationPermission();
+        
+        // Fermer la fenêtre de consentement
+        document.querySelector('.lcc-compact-cookie').style.display = 'none';
+    });
+
+    // Fonction pour demander la géolocalisation
+    function askForGeolocationPermission() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log('Position obtenue:', position);
+                // Tu peux maintenant utiliser les coordonnées de l'utilisateur
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                // Faire quelque chose avec la position...
+            }, function(error) {
+                console.error("Erreur de géolocalisation:", error);
+                alert("Impossible d'obtenir votre position.");
+            });
+        } else {
+            alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        }
+    }
+});
+
+    </script>
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
     @stack('scripts')
 </body>
 </html>
