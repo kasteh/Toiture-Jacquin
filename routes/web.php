@@ -22,7 +22,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::group(['middleware' => 'auth'], function () {
         // Dashboard & Déconnexion
-        Route::get('/', 'AdminController@dashboard')->name('admin.dashboard');
+        Route::get('/dashboard', 'AdminController@dashboard')->name('admin.dashboard');
         Route::get('/logout', 'AdminController@logout')->name('admin.logout');
         Route::get('/stats', 'AdminController@stats')->name('admin.stats');
 

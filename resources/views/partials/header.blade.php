@@ -98,8 +98,10 @@
                     <!-- Liens statiques toujours vers domaine principal -->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('nos-agences') }}">Nos agences</a>
+                        <a class="nav-link" href="{{ route('nos-agences') }}">Nos agences</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('devenir-partenaire') }}">Devenir partenaire</a>
                         <a class="nav-link" href="{{ route('devenir-partenaire') }}">Devenir partenaire</a>
                     </li>
                 </ul>            

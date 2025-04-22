@@ -57,7 +57,7 @@ class AdminController extends Controller
     public function connexion(LoginRequest $request){
         $credentials = $request->only(['email', 'password']);
         if(Auth::attempt($credentials)){
-            return redirect('/admin');
+            return redirect()->route('admin.dashboard');
         } else {
             $errors = new MessageBag(['password' => ['Mot de passe incorrect']]);
             return redirect()->back()->withInput($request->input())->withErrors($errors);

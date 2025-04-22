@@ -12,7 +12,6 @@
 
     <!-- Lien vers Font Awesome (pour les icônes) -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
     <style>
         body {
             background-color: #f4f6f9; /* Fond de page clair */
@@ -94,5 +93,20 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 </body>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('loginForm');
+        const token = document.querySelector('input[name="_token"]').value;
+        
+        // Verify token exists
+        if (!token) {
+            console.error('CSRF token missing!');
+            fetch('/refresh-csrf')
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('input[name="_token"]').value = data.token;
+                });
+        }
+    });
+</script>
 </html>

@@ -113,7 +113,7 @@ class ContentController extends Controller
 
         return redirect()->route('admin.contents.index')->with('success', 'Contenu supprimé avec succès.');
     }
-    
+
     /**
      * Supprimer plusieurs contents sélectionnées.
      *

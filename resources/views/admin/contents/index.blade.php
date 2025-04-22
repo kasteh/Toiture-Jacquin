@@ -43,6 +43,9 @@
                             <th width="5%">
                                 <input type="checkbox" id="select-all">
                             </th>
+                            <th width="5%">
+                                <input type="checkbox" id="select-all">
+                            </th>
                             <th width="15%">Catégorie</th>
                             <th width="15%">Image</th>
                             <th width="20%">Titre</th>
@@ -53,6 +56,9 @@
                     <tbody>
                         @forelse($contents as $content)
                         <tr>
+                            <td>
+                                <input type="checkbox" class="content-checkbox" value="{{ $content->id }}">
+                            </td>
                             <td>
                                 <input type="checkbox" class="content-checkbox" value="{{ $content->id }}">
                             </td>
@@ -122,6 +128,30 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Select all checkbox toggle
+document.getElementById('select-all').addEventListener('change', function() {
+    const checked = this.checked;
+    document.querySelectorAll('.content-checkbox').forEach(cb => cb.checked = checked);
+});
+
+// Submit selected contents
+document.getElementById('bulk-delete-form').addEventListener('submit', function(e) {
+    const selected = Array.from(document.querySelectorAll('.content-checkbox:checked'))
+                          .map(cb => cb.value);
+
+    if (selected.length === 0) {
+        e.preventDefault();
+        alert('Veuillez sélectionner au moins un texte.');
+        return;
+    }
+
+    document.getElementById('selected-ids').value = selected.join(',');
+});
+</script>
+@endpush
 
 @push('scripts')
 <script>
